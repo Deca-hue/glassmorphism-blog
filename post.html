@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article | Glassmorphism Blog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Glassmorphism Effects */
+        .glass-nav {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            background: rgba(15, 23, 42, 0.7);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glass-card {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            background: rgba(15, 23, 42, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: #3b82f6;
+            border-bottom-color: #8b5cf6;
+            animation: spin 1.5s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Article Content */
+        .article-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .article-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+        .article-content p {
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .article-content h2 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 2.5rem 0 1.5rem;
+            color: white;
+        }
+        .article-content h3 {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin: 2rem 0 1.2rem;
+            color: white;
+        }
+        
+        /* Action Buttons */
+        .action-btn {
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+        }
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-purple-900 via-blue-800 to-indigo-900">
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <p class="text-white mt-4">Loading Article...</p>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="glass-nav fixed w-full z-10">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <a href="index.html" class="text-white font-bold text-xl">
+                    <i class="fas fa-arrow-left mr-2"></i> GlassBlog
+                </a>
+                <div class="flex items-center space-x-4">
+                    <button id="save-article" class="text-white hover:text-blue-300 transition">
+                        <i class="far fa-bookmark"></i>
+                    </button>
+                    <button id="share-article" class="text-white hover:text-blue-300 transition">
+                        <i class="fas fa-share-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Article Content -->
+    <main class="container mx-auto px-4 pt-32 pb-20">
+        <div id="article-container" class="article-content">
+            <!-- Content will be loaded here -->
+        </div>
+        
+        <!-- Article Actions -->
+        <div class="flex justify-center space-x-6 mt-12">
+            <button id="like-article" class="action-btn px-6 py-3 rounded-full text-white flex items-center">
+                <i class="far fa-heart mr-2"></i> Like
+            </button>
+            <button id="comment-toggle" class="action-btn px-6 py-3 rounded-full text-white flex items-center">
+                <i class="far fa-comment mr-2"></i> Comments
+            </button>
+        </div>
+        
+        <!-- Comments Section -->
+        <div id="comments-section" class="glass-card p-6 rounded-2xl mt-8 hidden">
+            <h3 class="text-xl font-bold text-white mb-6">Comments</h3>
+            <div class="space-y-4" id="comments-container">
+                <!-- Comments will be loaded here -->
+            </div>
+            <form id="comment-form" class="mt-6">
+                <textarea class="w-full px-4 py-3 rounded-lg bg-white bg-opacity-10 text-white placeholder-blue-200 mb-4" 
+                          placeholder="Add a comment..." required></textarea>
+                <button type="submit" class="glass-button px-6 py-2 rounded-lg text-white font-medium">
+                    Post Comment
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // DOM Elements
+        const loadingScreen = document.getElementById('loadingScreen');
+        const articleContainer = document.getElementById('article-container');
+        const saveButton = document.getElementById('save-article');
+        const likeButton = document.getElementById('like-article');
+        const commentsSection = document.getElementById('comments-section');
+        const commentToggle = document.getElementById('comment-toggle');
+        
+        // Local storage keys
+        const POSTS_KEY = 'glassblog_posts';
+        const SAVED_KEY = 'glassblog_saved';
+        const LIKED_KEY = 'glassblog_liked';
+        const COMMENTS_KEY = 'glassblog_comments';
+        
+        // Initialize the article page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show loading screen
+            loadingScreen.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            // Get article ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const articleId = urlParams.get('id');
+            
+            // Load article data
+            setTimeout(() => {
+                loadArticle(articleId);
+                loadingScreen.style.opacity = '0';
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }, 500);
+            }, 1800);
+            
+            // Initialize event listeners
+            initEventListeners();
+        });
+        
+        // Load article content
+        function loadArticle(articleId) {
+            const posts = JSON.parse(localStorage.getItem(POSTS_KEY)) || [];
+            const article = posts.find(post => post.id === articleId);
+            
+            if (article) {
+                // Check if article is saved
+                const savedArticles = JSON.parse(localStorage.getItem(SAVED_KEY)) || [];
+                if (savedArticles.includes(articleId)) {
+                    saveButton.innerHTML = '<i class="fas fa-bookmark"></i>';
+                }
+                
+                // Check if article is liked
+                const likedArticles = JSON.parse(localStorage.getItem(LIKED_KEY)) || [];
+                if (likedArticles.includes(articleId)) {
+                    likeButton.innerHTML = '<i class="fas fa-heart mr-2 text-red-400"></i> Liked';
+                }
+                
+                // Render article content
+                articleContainer.innerHTML = `
+                    <div class="glass-card p-8 rounded-2xl">
+                        <span class="inline-block px-3 py-1 rounded-full text-xs font-medium mb-4 
+                              ${getCategoryColor(article.category)}">${article.category}</span>
+                        <h1 class="text-3xl md:text-4xl font-bold text-white mb-6">${article.title}</h1>
+                        
+                        <div class="flex items-center mb-8">
+                            <img src="https://source.unsplash.com/random/50x50/?portrait" alt="${article.author}" 
+                                 class="w-10 h-10 rounded-full mr-3">
+                            <div>
+                                <p class="text-white">${article.author}</p>
+                                <p class="text-blue-200 text-sm">${new Date(article.date).toLocaleDateString()} • ${Math.ceil(article.content.length / 1000)} min read</p>
+                            </div>
+                        </div>
+                        
+                        <img src="${article.image}" alt="${article.title}" class="w-full h-auto rounded-xl mb-8">
+                        
+                        <div class="article-content">
+                            ${formatArticleContent(article.content)}
+                        </div>
+                    </div>
+                `;
+                
+                // Load comments
+                loadComments(articleId);
+            } else {
+                articleContainer.innerHTML = `
+                    <div class="glass-card p-8 rounded-2xl text-center">
+                        <h2 class="text-2xl font-bold text-white mb-4">Article Not Found</h2>
+                        <p class="text-blue-200 mb-6">The requested article could not be found.</p>
+                        <a href="index.html" class="glass-button px-6 py-3 rounded-full text-white font-medium inline-block">
+                            Back to Home
+                        </a>
+                    </div>
+                `;
+            }
+        }
+        
+        // Format article content with paragraphs
+        function formatArticleContent(content) {
+            // Split by double newlines for paragraphs
+            const paragraphs = content.split('\n\n');
+            return paragraphs.map(para => `<p>${para}</p>`).join('');
+        }
+        
+        // Load comments for article
+        function loadComments(articleId) {
+            const allComments = JSON.parse(localStorage.getItem(COMMENTS_KEY)) || {};
+            const comments = allComments[articleId] || [];
+            
+            const container = document.getElementById('comments-container');
+            container.innerHTML = '';
+            
+            if (comments.length === 0) {
+                container.innerHTML = '<p class="text-blue-200 text-center py-4">No comments yet</p>';
+            } else {
+                comments.forEach(comment => {
+                    const commentEl = document.createElement('div');
+                    commentEl.className = 'glass-card p-4 rounded-lg';
+                    commentEl.innerHTML = `
+                        <div class="flex items-start mb-2">
+                            <img src="https://source.unsplash.com/random/40x40/?user" 
+                                 class="w-8 h-8 rounded-full mr-3">
+                            <div>
+                                <p class="text-white font-medium">${comment.author}</p>
+                                <p class="text-blue-200 text-xs">${new Date(comment.date).toLocaleString()}</p>
+                            </div>
+                        </div>
+                        <p class="text-white">${comment.text}</p>
+                    `;
+                    container.appendChild(commentEl);
+                });
+            }
+        }
+        
+        // Initialize event listeners
+        function initEventListeners() {
+            // Save article
+            saveButton.addEventListener('click', function() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const articleId = urlParams.get('id');
+                let savedArticles = JSON.parse(localStorage.getItem(SAVED_KEY)) || [];
+                
+                if (savedArticles.includes(articleId)) {
+                    savedArticles = savedArticles.filter(id => id !== articleId);
+                    this.innerHTML = '<i class="far fa-bookmark"></i>';
+                } else {
+                    savedArticles.push(articleId);
+                    this.innerHTML = '<i class="fas fa-bookmark"></i>';
+                }
+                
+                localStorage.setItem(SAVED_KEY, JSON.stringify(savedArticles));
+            });
+            
+            // Like article
+            likeButton.addEventListener('click', function() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const articleId = urlParams.get('id');
+                let likedArticles = JSON.parse(localStorage.getItem(LIKED_KEY)) || [];
+                
+                if (likedArticles.includes(articleId)) {
+                    likedArticles = likedArticles.filter(id => id !== articleId);
+                    this.innerHTML = '<i class="far fa-heart mr-2"></i> Like';
+                } else {
+                    likedArticles.push(articleId);
+                    this.innerHTML = '<i class="fas fa-heart mr-2 text-red-400"></i> Liked';
+                }
+                
+                localStorage.setItem(LIKED_KEY, JSON.stringify(likedArticles));
+            });
+            
+            // Toggle comments
+            commentToggle.addEventListener('click', function() {
+                commentsSection.classList.toggle('hidden');
+                this.innerHTML = commentsSection.classList.contains('hidden') ? 
+                    '<i class="far fa-comment mr-2"></i> Comments' : 
+                    '<i class="fas fa-comment mr-2"></i> Hide Comments';
+            });
+            
+            // Share article
+            document.getElementById('share-article').addEventListener('click', function() {
+                const url = window.location.href;
+                if (navigator.share) {
+                    navigator.share({
+                        title: document.title,
+                        url: url
+                    }).catch(err => {
+                        console.log('Error sharing:', err);
+                    });
+                } else {
+                    // Fallback for browsers that don't support Web Share API
+                    navigator.clipboard.writeText(url).then(() => {
+                        alert('Link copied to clipboard!');
+                    });
+                }
+            });
+            
+            // Submit comment
+            document.getElementById('comment-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const textarea = this.querySelector('textarea');
+                const commentText = textarea.value.trim();
+                
+                if (commentText) {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const articleId = urlParams.get('id');
+                    
+                    const allComments = JSON.parse(localStorage.getItem(COMMENTS_KEY)) || {};
+                    const articleComments = allComments[articleId] || [];
+                    
+                    const newComment = {
+                        author: 'You', // In a real app, this would be the logged in user
+                        text: commentText,
+                        date: new Date().toISOString()
+                    };
+                    
+                    articleComments.push(newComment);
+                    allComments[articleId] = articleComments;
+                    localStorage.setItem(COMMENTS_KEY, JSON.stringify(allComments));
+                    
+                    // Reset form and reload comments
+                    textarea.value = '';
+                    loadComments(articleId);
+                }
+            });
+        }
+        
+        // Helper function for category colors
+        function getCategoryColor(category) {
+            const colors = {
+                design: 'bg-pink-500 bg-opacity-20 text-pink-300',
+                development: 'bg-blue-500 bg-opacity-20 text-blue-300',
+                javascript: 'bg-yellow-500 bg-opacity-20 text-yellow-300',
+                tutorial: 'bg-purple-500 bg-opacity-20 text-purple-300'
+            };
+            return colors[category] || 'bg-gray-500 bg-opacity-20 text-gray-300';
+        }
+    </script>
+</body>
+</html>

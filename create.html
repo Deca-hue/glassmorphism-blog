@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Post | Glassmorphism Blog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Glassmorphism Effects */
+        .glass-nav {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            background: rgba(15, 23, 42, 0.7);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glass-nav-mobile {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            background: rgba(15, 23, 42, 0.9);
+        }
+        .glass-card {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        .glass-button {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .glass-card {
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-purple-900 via-blue-800 to-indigo-900">
+    <!-- Navigation -->
+    <nav class="glass-nav fixed w-full z-10">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <a href="index.html" class="text-white font-bold text-xl">
+                    Glass<span class="text-blue-300">Blog</span>
+                </a>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="text-white hover:text-blue-300 transition">Home</a>
+                    <a href="create.html" class="text-white hover:text-blue-300 transition">Create Post</a>
+                    <a href="#" class="text-white hover:text-blue-300 transition">About</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="menu-toggle" class="text-white focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden glass-nav-mobile px-6 pb-4">
+            <a href="index.html" class="block text-white py-2 hover:text-blue-300">Home</a>
+            <a href="create.html" class="block text-white py-2 hover:text-blue-300">Create Post</a>
+            <a href="#" class="block text-white py-2 hover:text-blue-300">About</a>
+        </div>
+    </nav>
+
+    <!-- Create Post Form -->
+    <main class="container mx-auto px-4 pt-32 pb-20">
+        <div class="glass-card p-8 rounded-2xl max-w-3xl mx-auto">
+            <h1 class="text-3xl font-bold text-white mb-8 text-center">Create New Post</h1>
+            
+            <form id="post-form" class="space-y-6">
+                <div>
+                    <label for="title" class="block text-white mb-2">Post Title</label>
+                    <input type="text" id="title" class="w-full px-4 py-3 rounded-lg bg-white bg-opacity-10 text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Enter post title" required>
+                </div>
+                
+                <div>
+                    <label for="category" class="block text-white mb-2">Category</label>
+                    <select id="category" class="w-full px-4 py-3 rounded-lg bg-white bg-opacity-10 text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
+                        <option value="design">Design</option>
+                        <option value="development">Development</option>
+                        <option value="javascript">JavaScript</option>
+                        <option value="ui-ux">UI/UX</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="image" class="block text-white mb-2">Featured Image URL</label>
+                    <input type="url" id="image" class="w-full px-4 py-3 rounded-lg bg-white bg-opacity-10 text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="https://example.com/image.jpg">
+                </div>
+                
+                <div>
+                    <label for="content" class="block text-white mb-2">Post Content</label>
+                    <textarea id="content" rows="8" class="w-full px-4 py-3 rounded-lg bg-white bg-opacity-10 text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Write your post content here..." required></textarea>
+                </div>
+                
+                <div class="flex justify-end space-x-4">
+                    <a href="index.html" class="glass-button px-6 py-3 rounded-full text-white font-semibold hover:bg-opacity-30 transition">Cancel</a>
+                    <button type="submit" class="glass-button px-6 py-3 rounded-full text-white font-semibold hover:bg-opacity-30 transition bg-blue-500 bg-opacity-50">Publish Post</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // Local storage key for posts
+        const POSTS_KEY = 'glassblog_posts';
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Common functionality
+            initCommon();
+            
+            // Create page functionality
+            initCreatePage();
+        });
+
+        // Common functionality across all pages
+        function initCommon() {
+            // Mobile menu toggle
+            const menuToggle = document.getElementById('menu-toggle');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (menuToggle && mobileMenu) {
+                menuToggle.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+        }
+
+        // Create post page functionality
+        function initCreatePage() {
+            const postForm = document.getElementById('post-form');
+            
+            if (postForm) {
+                postForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // Get form values
+                    const title = document.getElementById('title').value;
+                    const category = document.getElementById('category').value;
+                    const image = document.getElementById('image').value || 'https://source.unsplash.com/random/600x400/?tech';
+                    const content = document.getElementById('content').value;
+                    
+                    // Create new post
+                    const newPost = {
+                        id: Date.now().toString(),
+                        title,
+                        category,
+                        image,
+                        content,
+                        author: {
+                            name: "You",
+                            avatar: "https://source.unsplash.com/random/50x50/?portrait"
+                        },
+                        date: new Date().toISOString(),
+                        likes: 0,
+                        liked: false
+                    };
+                    
+                    // Save post
+                    savePost(newPost);
+                    
+                    // Redirect to home page
+                    window.location.href = 'index.html';
+                });
+            }
+        }
+
+        // Post storage functions
+        function getPosts() {
+            const postsJson = localStorage.getItem(POSTS_KEY);
+            return postsJson ? JSON.parse(postsJson) : [];
+        }
+
+        function savePost(post) {
+            const posts = getPosts();
+            posts.unshift(post); // Add new post at the beginning
+            localStorage.setItem(POSTS_KEY, JSON.stringify(posts));
+        }
+    </script>
+</body>
+</html>
