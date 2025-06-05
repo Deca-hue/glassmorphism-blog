@@ -11,33 +11,7 @@
         const searchSection = document.getElementById('search-section');
         const mainContent = document.getElementById('main-content');
         
-        // Initialize the app
-        document.addEventListener('DOMContentLoaded', function() {
-            // Show loading screen
-            showLoading();
-            
-            // Load initial data
-            setTimeout(() => {
-                initPosts();
-                updateSavedCount();
-                initEventListeners();
-                hideLoading();
-            }, 1500);
-        });
         
-        // Loading functions
-        function showLoading() {
-            loadingScreen.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function hideLoading() {
-            loadingScreen.style.opacity = '0';
-            setTimeout(() => {
-                loadingScreen.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            }, 500);
-        }
         
         // Post functions
         function initPosts() {
@@ -51,7 +25,7 @@
                         id: '1',
                         title: 'Getting Started with Glassmorphism',
                         category: 'design',
-                        image: 'https://source.unsplash.com/random/600x400/?ui,design',
+                        image: 'assets/sarah.jpg',
                         content: 'Glassmorphism is a modern UI design trend that creates a frosted glass effect...',
                         author: 'Jane Doe',
                         date: '2023-05-20',
@@ -198,13 +172,3 @@
             });
         }
         
-        // Helper functions
-        function getCategoryColor(category) {
-            const colors = {
-                design: 'bg-pink-500 bg-opacity-20 text-pink-300',
-                development: 'bg-blue-500 bg-opacity-20 text-blue-300',
-                javascript: 'bg-yellow-500 bg-opacity-20 text-yellow-300',
-                tutorial: 'bg-purple-500 bg-opacity-20 text-purple-300'
-            };
-            return colors[category] || 'bg-gray-500 bg-opacity-20 text-gray-300';
-        }

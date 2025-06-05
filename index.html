@@ -87,66 +87,6 @@
                 font-size: 2.5rem;
             }
         }
-        * Loading Screen */
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            background: rgba(15, 23, 42, 0.9);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease;
-        }
-        .loading-content {
-            text-align: center;
-        }
-        .loading-spinner {
-            width: 80px;
-            height: 80px;
-            border: 8px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            border-top-color: #3b82f6;
-            border-bottom-color: #8b5cf6;
-            animation: spin 1.5s linear infinite;
-            margin-bottom: 20px;
-        }
-        .loading-text {
-            color: white;
-            font-size: 1.2rem;
-            margin-top: 20px;
-            font-weight: 300;
-        }
-        .loading-dots {
-            display: inline-flex;
-            margin-top: 15px;
-        }
-        .loading-dots span {
-            width: 10px;
-            height: 10px;
-            margin: 0 4px;
-            background: white;
-            border-radius: 50%;
-            animation: pulse 1.4s infinite ease-in-out;
-        }
-        .loading-dots span:nth-child(1) { animation-delay: 0s; }
-        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
-        }
         
         /* Saved articles indicator */
         .saved-indicator {
@@ -168,18 +108,6 @@
     </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-purple-900 via-blue-800 to-indigo-900 bg-fixed">
-    <!-- Loading Screen -->
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loading-content">
-            <div class="loading-spinner"></div>
-            <h2 class="loading-text">Loading Content</h2>
-            <div class="loading-dots">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-    </div>
     <!-- Navigation -->
     <nav class="glass-nav fixed w-full z-50">
         <div class="container mx-auto px-6 py-4">
